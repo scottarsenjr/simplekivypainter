@@ -95,6 +95,10 @@ class PaintApp(App):
     def save(self, instance):
         self.painter.size = (Window.size[0], Window.size[1])
         self.painter.export_to_png('image.png')
+        content = Label(text='Image has been successfully saved!')
+        popup = Popup(title='Saved', content=content, size_hint=(None, None), size=(400, 200))
+        content.bind(on_press=popup.dismiss)
+        popup.open()
 
     @staticmethod
     def color(instance):
