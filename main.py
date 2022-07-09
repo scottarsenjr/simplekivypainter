@@ -10,8 +10,6 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.colorpicker import ColorPicker
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.boxlayout import BoxLayout
 
 from kivy.graphics import (Color, Rectangle, Line, Ellipse)
 from kivy.uix.button import Button
@@ -22,27 +20,8 @@ from kivy.uix.slider import Slider
 
 # MAIN WIDGET CLASS
 
-class MainWidget(GridLayout):
+class MainWidget(Widget):
     pass
-
-
-# CUSTOM LAYOUT CLASS
-
-class CustomLayout(FloatLayout):
-
-    def __init__(self, **kwargs):
-        # make sure we aren't overriding any important functionality
-        super(CustomLayout, self).__init__(**kwargs)
-
-        with self.canvas.before:
-            Color(*background_value)  # green; colors range from 0-1 instead of 0-255
-            self.rect = Rectangle(size=self.size, pos=self.pos)
-
-        self.bind(size=self._update_rect, pos=self._update_rect)
-
-    def _update_rect(self, instance, value):
-        self.rect.pos = instance.pos
-        self.rect.size = instance.size
 
 
 # BACKGROUND COLOR CLASS
@@ -61,6 +40,7 @@ class BackgroundColorChange(GridLayout):
     def on_color(instance, value):
         global background_value
         background_value = instance.color
+        Window.clearcolor = background_value
 
 
 # BRUSH COLOR CLASS
@@ -121,11 +101,12 @@ class PainterWidget(Widget):
         touch.ud['line'].points += (touch.x, touch.y)
 
 
+# MAIN APP CLASS
+
 class PaintApp(App):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.painter = PainterWidget()
-        self.background = CustomLayout()
 
     def build(self):
 
@@ -133,15 +114,12 @@ class PaintApp(App):
 
         # WIDGETS
 
-        parent.add_widget(self.background)
         parent.add_widget(self.painter)
         parent.add_widget(Button(text='Clear', size=btn_size, pos=(0, 0), on_press=self.clear_func))
         parent.add_widget(Button(text='Brush size', size=btn_size, pos=(100, 0), on_press=self.width_func))
         parent.add_widget(Button(text='Color', size=btn_size, pos=(200, 0), on_press=self.color))
         parent.add_widget(Button(text='Background', size=btn_size, pos=(300, 0),
                                  on_press=self.change_background_color))
-
-        # TODO: MAKE BACKGROUND COLOR CHANGER TO WORK
 
         parent.add_widget(Button(text='Save', size=btn_size, pos=(400, 0), on_press=self.save))
 
